@@ -1,0 +1,160 @@
+PE2>en
+PE2#sh run
+PE2#sh running-config
+Building configuration...
+
+Current configuration : 4203 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname PE2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+ip vrf OGI
+ rd 100:2
+ route-target export 100:2
+ route-target import 100:1
+!
+ip vrf SON
+ rd 200:2
+ route-target export 200:2
+ route-target import 200:1
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+mpls label range 600 699
+!
+!
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+!
+interface GigabitEthernet0/0
+ description TO CE-A2 (OGI) 30.0.0.0/30
+ ip vrf forwarding OGI
+ ip address 30.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ description TO CE-B2 (son) 40.0.0.0/30
+ ip vrf forwarding SON
+ ip address 40.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ description TO P2 (CORE) 50.0.0.0/30
+ ip address 50.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+ mpls ip
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+!
+router eigrp 20
+ !
+ address-family ipv4 vrf SON autonomous-system 20
+  redistribute bgp 65000 metric 10000 100 255 1 1500
+  network 40.0.0.0 0.0.0.3
+ exit-address-family
+ redistribute bgp 65000
+!
+router ospf 10 vrf OGI
+ router-id 20.20.20.20
+ redistribute bgp 65000 subnets
+ network 30.0.0.0 0.0.0.3 area 0
+!
+router ospf 1
+ router-id 2.2.2.2
+ network 2.2.2.2 0.0.0.0 area 0
+ network 50.0.0.0 0.0.0.3 area 0
+!
+router bgp 65000
+ bgp log-neighbor-changes
+ neighbor 1.1.1.1 remote-as 65000
+ neighbor 1.1.1.1 update-source Loopback0
+ !
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf OGI
+  redistribute ospf 10
+ exit-address-family
+ !
+ address-family ipv4 vrf SON
+  redistribute eigrp 20
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 ioam timestamp
+!
+!
+mpls ldp router-id Loopback0 force
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end
+
+PE2#
