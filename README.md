@@ -91,7 +91,9 @@ This lab demonstrates several important technologies used in Service Provider ne
 ### Customer Routing
 
 - **OSPF** between CE and PE for Customer A
+
 - **EIGRP** between CE and PE for Customer B
+
 - Route redistribution between BGP and customer protocols
 
 ---
@@ -99,12 +101,19 @@ This lab demonstrates several important technologies used in Service Provider ne
 ## Addressing Overview
 
 ### Provider Loopbacks
+
 | Router | Loopback |
+
 | PE1 | 1.1.1.1 |
+
 | PE2 | 2.2.2.2 |
+
 | P1 | 4.4.4.4 |
+
 | P2 | 5.5.5.5 |
+
 | P3 | 6.6.6.6 |
+
 | P4 | 7.7.7.7 |
 
 
@@ -115,9 +124,13 @@ These loopbacks are used for:
 - MP-BGP peering
 ---
 ### Customers Loopbacks
+
 | CE-A1 | 172.16.1.1/24 |
+
 | CE-A2 | 172.16.2.1/24 |
+
 | CE-B1 | 172.17.1.1/24 |
+
 | CE-B2 | 172.17.2.1/24 |
 
 ## VRF Configuration
@@ -125,45 +138,69 @@ These loopbacks are used for:
 Two VRFs are configured on the Provider Edge routers.
 
 ### VRF OGI
+
 RD: 100:1
+
 RT export: 100:1
+
 RT import: 100:1
 
 ### VRF SON
+
 RD: 200:1
+
 RT export: 200:1
+
 RT import: 200:1
 
 ### Verification commands
-### Provider Core Routing
+  
   Configure **OSPF** across the provider backbone.
+  
   Verify:
+  
   show ip ospf neighbor
+  
   show ip route
   
 ### Provider Core Routing
+
   Configure **OSPF** across the provider backbone.
+  
   Verify:
+  
   ip cef
+  
   mpls label range 100 199
+  
   mpls ip
   
 ### Verify LDP neighbors:
+
   show mpls ldp neighbor
+  
   show mpls forwarding-table
 
 ### VRF Configuration
+
   Create VRFs on PE routers and associate CE-facing interfaces.
+  
   Example:
+  
   ip vrf OGI
+  
   rd 100:1
+  
   route-target export 100:1
+  
   route-target import 100:1
 
 ### MP-BGP Configuration
   Establish iBGP between PE routers using loopbacks.
   Activate VPNv4 address-family.
+  
   Verify:
+  
   show ip bgp vpnv4 all
 
 ---
