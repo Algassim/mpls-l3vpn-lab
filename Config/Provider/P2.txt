@@ -1,0 +1,122 @@
+P2>en
+P2#sh run
+P2#sh running-config
+Building configuration...
+
+Current configuration : 3363 bytes
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname P2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+mpls label range 400 499
+!
+!
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 6.6.6.6 255.255.255.255
+!
+interface GigabitEthernet0/0
+ description TO P1 100.0.0.0/30
+ ip address 100.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+ mpls ip
+!
+interface GigabitEthernet0/1
+ description TO P4 90.0.0.0/30
+ ip address 90.0.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+ mpls ip
+!
+interface GigabitEthernet0/2
+ description TO PE2 50.0.0.0/30
+ ip address 50.0.0.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+ mpls ip
+!
+interface GigabitEthernet0/3
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ router-id 6.6.6.6
+ network 6.6.6.6 0.0.0.0 area 0
+ network 50.0.0.0 0.0.0.3 area 0
+ network 90.0.0.0 0.0.0.3 area 0
+ network 100.0.0.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 ioam timestamp
+!
+!
+mpls ldp router-id Loopback0 force
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end
+
+P2#
